@@ -4,7 +4,7 @@ import time             #
 import os               # path
 import random           #
 
-WIN_WIDTH = 600
+WIN_WIDTH = 500
 WIN_HEIGHT = 800
 
 BIRD_IMGS = [pygame.transform.scale2x(pygame.image.load(os.path.join("resource", "img", "bird1.png"))), pygame.transform.scale2x(pygame.image.load(os.path.join("resource", "img", "bird2.png"))), pygame.transform.scale2x(pygame.image.load(os.path.join("resource", "img", "bird3.png")))]
@@ -50,7 +50,7 @@ class Bird:
             if self.tilt < self.MAX_ROTATION:
                 self.tilt = self.MAX_ROTATION
         else:
-            if self.tile >= -90:
+            if self.tilt >= -90:
                 self.tilt -= self.ROT_VEL
 
     def draw(self, win):
@@ -87,13 +87,16 @@ def draw_window(win, bird):
 def main():
     bird = Bird(200, 200)
     win = pygame.display.set_mode((WIN_WIDTH,WIN_HEIGHT))
+    clock = pygame.time.Clock()
 
     run = True
     while run:
+        clock.tick(30)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
 
+        bird.move()
         draw_window(win, bird)
 
     pygame.quit()
