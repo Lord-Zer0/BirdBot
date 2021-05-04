@@ -3,8 +3,11 @@ import neat             #
 import time             #
 import os               # path
 import random           #
+import pickle           #
 
 pygame.font.init()
+
+GEN = 0
 
 WIN_WIDTH = 500
 WIN_HEIGHT = 800
@@ -157,7 +160,7 @@ class Base:
         win.blit(self.IMG, (self.x2, self.y))
 
 
-def draw_window(win, birds, pipes, base, score):
+def draw_window(win, birds, pipes, base, score, gen):
     win.blit(BG_IMG, (0,0))
 
     for pipe in pipes:
@@ -167,11 +170,17 @@ def draw_window(win, birds, pipes, base, score):
     text = STAT_FONT.render("Score: " + str(score), 1, (255,255,255))
     win.blit(text, (WIN_WIDTH - 10 - text.get_width(), 10))
 
+    text = STAT_FONT.render("Gen: " + str(gen), 1, (255,255,255))
+    win.blit(text, (10, 10))
+
     for bird in birds:
         bird.draw(win)
     pygame.display.update()
 
+
 def main(genomes, config):
+    global GEN
+
     nets = []
     ge = []
     birds = []
@@ -251,8 +260,12 @@ def main(genomes, config):
                 nets.pop(x)
                 ge.pop(x)
 
+        if score > 50:
+            break
+
         base.move()
-        draw_window(win, birds, pipes, base, score)
+        draw_window(win, birds, pipes, base, score, GEN)
+    GEN += 1
 
 
 def run(config_path):
@@ -264,7 +277,11 @@ def run(config_path):
     stats = neat.StatisticsReporter()
     p.add_reporter(stats)
 
-    winner = p.run(main(), 50)
+    winner = p.run(main, 50)
+    Pkl_Filename = "Pickle_RL_Model.pkl"
+
+    with open(Pkl_Filename, 'wb') as file:
+        pickle.dump(winner, file)
 
 
 if __name__ == "__main__":
